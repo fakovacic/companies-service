@@ -1,0 +1,29 @@
+version: '3.5'
+
+services:
+  store:
+    image: postgres
+    environment:
+      POSTGRES_USER: company
+      POSTGRES_PASSWORD: company-pass
+      POSTGRES_DB: companies
+    ports:
+      - "5432:5432"
+    networks:
+      - companies
+  companies:
+    image: companies
+    environment:
+      ENV: local
+      DB_HOST: store
+      DB_USER: company
+      DB_PASSWORD: company-pass
+      DB_NAME: companies
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - companies
+networks:
+  companies:
+    driver: bridge
