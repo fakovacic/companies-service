@@ -2,14 +2,15 @@ package notifier
 
 import (
 	"github.com/fakovacic/companies-service/internal/companies"
+	"github.com/segmentio/kafka-go"
 )
 
-func New(c *companies.Config) companies.Notifier {
+func New(conn *kafka.Conn) companies.Notifier {
 	return &notifier{
-		config: c,
+		conn: conn,
 	}
 }
 
 type notifier struct {
-	config *companies.Config
+	conn *kafka.Conn
 }

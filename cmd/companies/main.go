@@ -9,10 +9,12 @@ import (
 	"time"
 
 	"github.com/fakovacic/companies-service/cmd/companies/config"
-	"github.com/fakovacic/companies-service/cmd/companies/config/integrations"
 	"github.com/fakovacic/companies-service/internal/companies"
+	handlers "github.com/fakovacic/companies-service/internal/companies/handlers/http"
 	"github.com/fakovacic/companies-service/internal/companies/handlers/http/middleware"
+	"github.com/fakovacic/companies-service/internal/companies/integrations/notifier"
 	svcMiddleware "github.com/fakovacic/companies-service/internal/companies/middleware"
+	"github.com/fakovacic/companies-service/internal/companies/store"
 	"github.com/fakovacic/companies-service/internal/health"
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
@@ -24,21 +26,42 @@ const errorChan int = 10
 func main() {
 	c, err := config.NewConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("config error:", err)
 	}
 
-	dbStore, err := config.NewStore(c)
+	dbConn, err := config.NewDBConn(c)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("db conn error:", err)
 	}
 
-	notifier := integrations.NewNotifier(c)
+	dbStore := store.NewStore(dbConn)
+
+	kafkaConn, err := config.NewKafkaConn()
+	if err != nil {
+		log.Fatal("kafka conn error:", err)
+	}
+
+	defer func() {
+		er := dbConn.Close()
+		if er != nil {
+			log.Fatal("db close error:", er)
+		}
+	}()
+
+	defer func() {
+		er := kafkaConn.Close()
+		if er != nil {
+			log.Fatal("kafka close error:", er)
+		}
+	}()
+
+	notifier := notifier.New(kafkaConn)
 
 	service := companies.New(c, dbStore, time.Now, uuid.New)
-	service = svcMiddleware.NewNotificationMiddleware(service, notifier)
+	service = svcMiddleware.NewNotificationMiddleware(service, c, notifier)
 	service = svcMiddleware.NewLoggingMiddleware(service, c)
 
-	h := config.NewHandlers(c, service)
+	h := handlers.New(c, service)
 
 	app := fiber.New()
 	app.Use(middleware.Logger(c))
@@ -85,6 +108,8 @@ func main() {
 			if e != nil {
 				c.Log.Fatal().Msg(e.Error())
 			}
+
+			return
 		case s := <-signalChan:
 			c.Log.Info().Msgf("Captured %v. Exiting...", s)
 			health.SetHealthStatus(http.StatusServiceUnavailable)
@@ -94,7 +119,7 @@ func main() {
 				c.Log.Fatal().Msg(err.Error())
 			}
 
-			os.Exit(0)
+			return
 		}
 	}
 }

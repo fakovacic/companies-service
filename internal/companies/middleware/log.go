@@ -6,12 +6,6 @@ import (
 	"github.com/fakovacic/companies-service/internal/companies"
 )
 
-type loggingMiddleware struct {
-	next    companies.Service
-	config  *companies.Config
-	service string
-}
-
 func NewLoggingMiddleware(next companies.Service, config *companies.Config) companies.Service {
 	m := loggingMiddleware{
 		next:    next,
@@ -20,6 +14,12 @@ func NewLoggingMiddleware(next companies.Service, config *companies.Config) comp
 	}
 
 	return &m
+}
+
+type loggingMiddleware struct {
+	next    companies.Service
+	config  *companies.Config
+	service string
 }
 
 func (m *loggingMiddleware) Get(ctx context.Context, input string) (*companies.Company, error) {

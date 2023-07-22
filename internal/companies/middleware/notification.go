@@ -6,18 +6,20 @@ import (
 	"github.com/fakovacic/companies-service/internal/companies"
 )
 
-type notificationMiddleware struct {
-	next     companies.Service
-	notifier companies.Notifier
-}
-
-func NewNotificationMiddleware(next companies.Service, notifier companies.Notifier) companies.Service {
+func NewNotificationMiddleware(next companies.Service, config *companies.Config, notifier companies.Notifier) companies.Service {
 	m := notificationMiddleware{
 		next:     next,
+		config:   config,
 		notifier: notifier,
 	}
 
 	return &m
+}
+
+type notificationMiddleware struct {
+	next     companies.Service
+	config   *companies.Config
+	notifier companies.Notifier
 }
 
 func (m *notificationMiddleware) Get(ctx context.Context, input string) (*companies.Company, error) {
@@ -29,10 +31,19 @@ func (m *notificationMiddleware) Create(ctx context.Context, input *companies.Co
 }
 
 func (m *notificationMiddleware) Update(ctx context.Context, id string, input *companies.Company, fields []string) (*companies.Company, error) {
+	reqID := companies.GetCtxStringVal(ctx, companies.ContextKeyRequestID)
+
 	model, err := m.next.Update(ctx, id, input, fields)
 
 	if err == nil {
-		m.notifier.Send(ctx)
+		eventErr := m.notifier.Send(ctx, "companies", "updated")
+		if eventErr != nil {
+			m.config.Log.Error().Str("reqID", reqID).Err(eventErr).Msg("failed to send event")
+		}
+
+		if eventErr == nil {
+			m.config.Log.Info().Str("reqID", reqID).Msg("event sent")
+		}
 	}
 
 	return model, err
