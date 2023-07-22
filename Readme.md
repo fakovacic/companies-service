@@ -12,6 +12,11 @@ make lint
 make test
 ```
 
+- integration tests check
+```
+make integration-test
+```
+
 ## Run
 
 ```
