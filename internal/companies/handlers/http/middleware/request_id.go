@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func ReqID(config *companies.Config) fiber.Handler {
+func ReqID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		c.Locals(companies.ContextKeyRequestID, uuid.New().String())
 

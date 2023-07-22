@@ -16,6 +16,7 @@ linters:
     - musttag
     - cyclop  
     - lll
+    - depguard
     # deprecated
     - structcheck
     - scopelint

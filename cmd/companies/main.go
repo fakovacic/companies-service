@@ -41,7 +41,7 @@ func main() {
 
 	app := fiber.New()
 	app.Use(middleware.Logger(c))
-	app.Use(middleware.ReqID(c))
+	app.Use(middleware.ReqID())
 
 	app.Post("/", h.Create())
 	app.Get("/:id", h.Get())
@@ -54,7 +54,7 @@ func main() {
 	)
 
 	// health router
-	healthServer := health.StartServer(healthAddr)
+	healthServer := health.StartServer()
 
 	errChan := make(chan error, errorChan)
 

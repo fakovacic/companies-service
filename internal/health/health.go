@@ -12,7 +12,7 @@ var (
 	mu            sync.RWMutex
 )
 
-func StartServer(healthAddr string) *fiber.App {
+func StartServer() *fiber.App {
 	app := fiber.New()
 	app.Get("/", func(c *fiber.Ctx) error {
 		switch GetHealthStatus() {
