@@ -17,6 +17,7 @@ linters:
     - cyclop  
     - lll
     - depguard
+    - godot
     # deprecated
     - structcheck
     - scopelint

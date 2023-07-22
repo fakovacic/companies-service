@@ -9,6 +9,7 @@ import (
 	"github.com/lib/pq"
 )
 
+// consider update only requested fields
 func (s *store) Update(ctx context.Context, id string, model *companies.Company) error {
 	_, err := s.db.ExecContext(ctx, `UPDATE companies 
 		SET 
