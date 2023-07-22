@@ -91,7 +91,6 @@ func (t *CompanyType) Parse(s string) error {
 	case "soleProprietorship":
 		*t = TypeSoleProprietorship
 	case "":
-		return errors.BadRequest("type is empty")
 	default:
 		return errors.BadRequest("invalid type '%s'", s)
 	}

@@ -6,6 +6,10 @@ lint:
 test:
 	@go test -race -cover ./internal/...
 
+.PHONY: integration-test
+integration-test:
+	@go test -count=1 ./integration-tests
+
 .PHONY: compile
 compile:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-w -s" -o bin/companies ./cmd/companies/main.go

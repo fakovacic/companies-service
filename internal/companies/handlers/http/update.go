@@ -16,11 +16,11 @@ type UpdateRequest struct {
 }
 
 type UpdateCompany struct {
-	Name            string                `json:"name"`
+	Name            string                `json:"name,omitempty"`
 	Description     string                `json:"description,omitempty"`
-	EmployeesAmount uint32                `json:"employeesAmount"`
-	Registered      bool                  `json:"registered"`
-	Type            companies.CompanyType `json:"type"`
+	EmployeesAmount uint32                `json:"employeesAmount,omitempty"`
+	Registered      bool                  `json:"registered,omitempty"`
+	Type            companies.CompanyType `json:"type,omitempty"`
 }
 
 func (h *Handler) Update() func(c *fiber.Ctx) error {
