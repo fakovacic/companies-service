@@ -11,16 +11,18 @@ const (
 	ServiceName string = "companies"
 )
 
-func NewConfig(env string) *Config {
+func NewConfig(env, signingKey string) *Config {
 	return &Config{
-		Env: env,
-		Log: newLogger(),
+		Env:           env,
+		JWTSigningKey: signingKey,
+		Log:           newLogger(),
 	}
 }
 
 type Config struct {
-	Log zerolog.Logger
-	Env string
+	Log           zerolog.Logger
+	JWTSigningKey string
+	Env           string
 }
 
 func newLogger() zerolog.Logger {

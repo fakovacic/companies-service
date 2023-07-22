@@ -14,6 +14,7 @@ import (
 	"github.com/fakovacic/companies-service/internal/companies/handlers/http/middleware"
 	svcMiddleware "github.com/fakovacic/companies-service/internal/companies/middleware"
 	"github.com/fakovacic/companies-service/internal/health"
+	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -43,10 +44,18 @@ func main() {
 	app.Use(middleware.Logger(c))
 	app.Use(middleware.ReqID())
 
-	app.Post("/", h.Create())
-	app.Get("/:id", h.Get())
-	app.Patch("/:id", h.Update())
-	app.Delete("/:id", h.Delete())
+	app.Post("/login", h.Login())
+	app.Get("/companies/:id", h.Get())
+
+	app.Use(jwtware.New(jwtware.Config{
+		SigningKey: jwtware.SigningKey{
+			Key: []byte(c.JWTSigningKey),
+		},
+	}))
+
+	app.Post("/companies", h.Create())
+	app.Patch("/companies/:id", h.Update())
+	app.Delete("/companies/:id", h.Delete())
 
 	var (
 		httpAddr   = "0.0.0.0:8080"

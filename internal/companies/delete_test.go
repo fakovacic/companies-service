@@ -58,7 +58,7 @@ func TestDelete(t *testing.T) {
 			}
 
 			service := companies.New(
-				companies.NewConfig(""),
+				companies.NewConfig("", ""),
 				store,
 				tests.GenTime,
 				tests.GenUUID,

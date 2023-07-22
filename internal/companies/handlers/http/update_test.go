@@ -109,7 +109,7 @@ func TestUpdate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			h := handlers.New(companies.NewConfig(""), service)
+			h := handlers.New(companies.NewConfig("", ""), service)
 
 			app := fiber.New()
 			app.Patch("/:id", h.Update())

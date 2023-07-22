@@ -80,7 +80,7 @@ func TestGet(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			h := handlers.New(companies.NewConfig(""), service)
+			h := handlers.New(companies.NewConfig("", ""), service)
 
 			app := fiber.New()
 			app.Get("/:id", h.Get())

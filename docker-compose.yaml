@@ -15,10 +15,13 @@ services:
     image: companies
     environment:
       ENV: local
+
       DB_HOST: store
       DB_USER: company
       DB_PASSWORD: company-pass
       DB_NAME: companies
+
+      JWT_SIGNING_KEY: secret
     ports:
       - "8080:8080"
       - "8081:8081"

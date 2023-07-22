@@ -13,5 +13,10 @@ func NewConfig() (*companies.Config, error) {
 		return nil, errors.New("ENV is empty")
 	}
 
-	return companies.NewConfig(env), nil
+	signingKey := os.Getenv("JWT_SIGNING_KEY")
+	if signingKey == "" {
+		return nil, errors.New("JWT_SIGNING_KEY is empty")
+	}
+
+	return companies.NewConfig(env, signingKey), nil
 }
