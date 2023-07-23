@@ -12,7 +12,8 @@ make lint
 make test
 ```
 
-- integration tests check
+- integration tests check 
+- local services must be running - see Run below to start
 ```
 make integration-test
 ```
